@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.3)
+project(library)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+set(SOURCE_FILES headers.cpp main.cpp)
+#set(SOURCE_FILES headers.cpp main.cpp managers/bookManager.cpp managers/bookManager.h managers/readerManager.cpp managers/readerManager.h)
+add_executable(library ${SOURCE_FILES})

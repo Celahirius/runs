@@ -1,0 +1,33 @@
+create table role (
+    role_id serial primary key
+    , role varchar(30) not null
+    , permission int not null
+);
+
+create table account (
+    account_id serial primary key
+    , username varchar(30) not null
+    , password varchar(30) not null
+    , logged_in boolean default FALSE
+    , role_id int references role(role_id)
+);
+
+create table runner (
+    runner_id serial primary key
+    , user_id int references account(account_id)
+);
+
+create table run (
+	run_id serial primary key
+    , name varchar(30) not null
+    , date date default current_date not null
+);
+
+create table score (
+	score_id serial primary key
+    , run_id int references run(run_id)
+    , runner_id int references runner(runner_id)
+    , score int
+    , time time without time zone
+    , finished_run bool default FALSE
+);

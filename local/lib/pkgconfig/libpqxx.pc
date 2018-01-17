@@ -1,0 +1,10 @@
+prefix=/home/tkostek/xml/jpkproject/libs/local
+exec_prefix=/home/tkostek/xml/jpkproject/libs/archdir
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libpqxx
+Description: a C++ API to the PostgreSQL database management system.
+Version: 4.0
+Libs: -L${libdir} -L/usr/lib -lpqxx
+Cflags: -I${includedir} -I/usr/include/postgresql
