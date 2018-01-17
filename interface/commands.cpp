@@ -42,11 +42,83 @@ bool CommandManager::showCommandHistory(int n, vector <string>* previousCommands
 }
 
 void CommandManager::showRuns(vector <string> parsedCommand) {
-
+    if (option == "") {
+        vector <vector<string>> res;
+        vector <string> row;
+        string sql;
+        connection C(loginDetails());
+        nontransaction N(C);
+        sql = "SELECT R.RUN_ID, R.NAME, S.SCORE, S.TIME DATE FROM RUN AS R, SCORE AS S, RUNNER AS U WHERE R.RUN_ID = S.RUN_ID AND S.RUNNER_ID = U.RUNNER_ID AND U.RUNNER_ID = " + parsedCommand[2] + ";";
+        result R(N.exec(convert(sql)));
+        for (result::const_iterator c = R.begin(); c != R.end(); c++) {
+            row.clear();
+            for (int i = 0; i < c.size(); i++) {
+                row.push_back(clearWhite(c[i].c_str()));
+                if (row[i].size() > this->longestField[i]) {
+                    this->longestField[i] = row[i].size();
+                }
+            }
+            res.push_back(row);
+        }
+        for (int i = 0; i < 4; i++) {
+            cout << this->header[i];
+            for (int j = 0; j < this->longestField[i] - this->header[i].size(); j++) {
+                cout << " ";
+            }
+            cout << "  " << flush;
+        }
+        cout << endl;
+        for (int i = 0; i < res.size(); i++) {
+            for (int j = 0; j < res[i].size(); j++) {
+                cout << res[i][j];
+                for(int k = 0; k < this->longestField[j] - res[i][j].size(); k++) {
+                    cout << " ";
+                }
+                cout << "  " << flush;
+            }
+            cout << endl;
+        }
+    }
 }
 
 void CommandManager::findRuns(vector <string> parsedCommand) {
-
+    if (option == "") {
+        vector <vector<string>> res;
+        vector <string> row;
+        string sql;
+        connection C(loginDetails());
+        nontransaction N(C);
+        sql = "SELECT R.RUN_ID, R.NAME, S.SCORE, S.TIME DATE FROM RUN AS R, SCORE AS S, RUNNER AS U WHERE R.RUN_ID = S.RUN_ID AND S.RUNNER_ID = U.RUNNER_ID AND U.RUNNER_ID = " + parsedCommand[2] + " AND (R.NAME ~* '.*" + N.esc(parsedCommand[3]) + ".*' OR R.DATE = to_date('" + N.esc(parsedCommand[3]) + "', 'DD.MM.YYYY') OR U.NAME ~* '.*" + N.esc(parsedCommand[3]) + ".*' OR U.SURNAME ~* '.*" + N.esc(parsedCommand[3]) + ".*');";
+        result R(N.exec(convert(sql)));
+        for (result::const_iterator c = R.begin(); c != R.end(); c++) {
+            row.clear();
+            for (int i = 0; i < c.size(); i++) {
+                row.push_back(clearWhite(c[i].c_str()));
+                if (row[i].size() > this->longestField[i]) {
+                    this->longestField[i] = row[i].size();
+                }
+            }
+            res.push_back(row);
+        }
+        for (int i = 0; i < 4; i++) {
+            cout << this->header[i];
+            for (int j = 0; j < this->longestField[i] - this->header[i].size(); j++) {
+                cout << " ";
+            }
+            cout << "  " << flush;
+        }
+        cout << endl;
+        for (int i = 0; i < res.size(); i++) {
+            for (int j = 0; j < res[i].size(); j++) {
+                cout << res[i][j];
+                for(int k = 0; k < this->longestField[j] - res[i][j].size(); k++) {
+                    cout << " ";
+                }
+                cout << "  " << flush;
+            }
+            cout << endl;
+        }
+    }
 }
 
 int CommandManager::countRuns(vector <string> parsedCommand) {

@@ -101,7 +101,7 @@ bool admin::updateRun(string run_id) {
     getline(cin, date_new);
 
     string sql = "UPDATE RUN SET"
-                 + ((runname_new != "")? " RUNNAME = '" +  N.esc(runname_new) + "'" : "")
+                 + ((runname_new != "")? " NAME = '" +  N.esc(runname_new) + "'" : "")
                  + ((date_new != "")? " DATE = to_date('" +  N.esc(date_new) + "', 'DD.MM.YYYY')" : "")
                  + " WHERE RUN_ID = " + run_id + ";";
     N.exec( convert(sql) );
