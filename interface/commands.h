@@ -22,8 +22,8 @@ public:
     bool showCommandHistory(int n, vector <string>* previousCommands);
     virtual void showRuns(vector <string> parsedCommand);
     virtual void findRuns(vector <string> parsedCommand);
-    virtual void countRuns(vector <string> parsedCommand);
-    virtual void countAverageTime(vector <string> parsedCommand);
+    virtual int countRuns(vector <string> parsedCommand);
+    virtual string countAverageTime(vector <string> parsedCommand);
     virtual void userCommand(vector <string> parsedCommand);
 };
 

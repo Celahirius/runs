@@ -42,7 +42,6 @@ bool CommandManager::showCommandHistory(int n, vector <string>* previousCommands
 }
 
 void CommandManager::showRuns(vector <string> parsedCommand) {
-    if (option == "") {
         vector <vector<string>> res;
         vector <string> row;
         string sql;
@@ -78,11 +77,9 @@ void CommandManager::showRuns(vector <string> parsedCommand) {
             }
             cout << endl;
         }
-    }
 }
 
 void CommandManager::findRuns(vector <string> parsedCommand) {
-    if (option == "") {
         vector <vector<string>> res;
         vector <string> row;
         string sql;
@@ -118,22 +115,23 @@ void CommandManager::findRuns(vector <string> parsedCommand) {
             }
             cout << endl;
         }
-    }
 }
 
 int CommandManager::countRuns(vector <string> parsedCommand) {
     string sql = "SELECT COUNT(*) FROM RUN;";
-    nontransaction N(*C);
+    connection C(loginDetails());
+    nontransaction N(C);
     result R( N.exec( convert(sql) ));
-    int count = clearWhite(R.begin()[0].as<int>());
+    int count = R.begin()[0].as<int>();
     return count;
 }
 
 string CommandManager::countAverageTime(vector <string> parsedCommand) {
     string sql = "SELECT TO_CHAR(((SUM(EXTRACT(EPOCH FROM TIME))/COUNT(*)) || ' second')::interval, 'HH:MI:SS') FROM SCORE WHERE RUNNER_ID = " + parsedCommand[2] + ";";
-    nontransaction N(*C);
+    connection C(loginDetails());
+    nontransaction N(C);
     result R( N.exec( convert(sql) ));
-    int time = clearWhite(R.begin()[0].as<string>());
+    string time = clearWhite(R.begin()[0].as<string>());
     return time;
 }
 
