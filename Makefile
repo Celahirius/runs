@@ -1,7 +1,7 @@
 PROJ = ./
 INCDIR = /usr/local/include
 LIBDIR = /usr/local/lib
-EXEC_FILE = run
+EXEC_FILE = runs
 
 
 all:
