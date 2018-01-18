@@ -6,7 +6,7 @@
 
 int admin::createUser() {
     connection C(loginDetails());
-    nontransaction N(C);
+    work W(C);
     string username, password, role;
     cout << "Username:" << endl;
     cin >> username;
@@ -16,14 +16,30 @@ int admin::createUser() {
     cin >> role;
 
     string sql = "INSERT INTO ACCOUNT (USERNAME, PASSWORD, ROLE_ID) VALUES ("
-                 + string("'") + N.esc(username)
-                 + "', '" + N.esc(password)
-                 + "', " + N.esc(role)
+                 + string("'") + W.esc(username)
+                 + "', '" + W.esc(password)
+                 + "', " + W.esc(role)
                  + ");";
-    N.exec( convert(sql) );
+    W.exec( convert(sql) );
+
+    if(role == "2") {
+        string name, surname;
+        cout << "Name:" << endl;
+        cin >> name;
+        cout << "Surname:" << endl;
+        cin >> surname;
+
+        sql = "INSERT INTO RUNNER (USER_ID, NAME, SURNAME) VALUES ("
+              + string("(SELECT currval('account_id_seq'))")
+                     + ", '" + W.esc(name)
+                     + "', '" + W.esc(surname) + "');";
+        W.exec( convert(sql) );
+    }
+    W.commit();
 
     sql = "SELECT currval('account_id_seq');";
-    result R( N.exec( convert(sql) ));
+    nontransaction N(C);
+    result R = N.exec( convert(sql) );
     int USER_ID = R.begin()[0].as<int>();
 
     return USER_ID;
