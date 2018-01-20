@@ -18,7 +18,12 @@ public:
     int createRun();
     bool deleteRun(string run_id);
     bool updateRun(string run_id);
+    bool updateRunner(string runner_id);
+    int insertRunnerScore(string runner_id, string run_id);
+    bool updateRunnerScore(string runner_id, string run_id);
     virtual void userCommand(vector <string> parsedCommand);
+    virtual void scoreCommand(vector <string> parsedCommand);
+    virtual void runCommand(vector <string> parsedCommand);
 };
 
 #endif //CLINIC_ADMIN_H

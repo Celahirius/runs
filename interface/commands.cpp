@@ -138,3 +138,11 @@ string CommandManager::countAverageTime(vector <string> parsedCommand) {
 void CommandManager::userCommand(vector <string> parsedCommand) {
     cout << "You do not have permission to use that command." << endl;
 }
+
+void CommandManager::scoreCommand(vector <string> parsedCommand) {
+    cout << "You do not have permission to use that command." << endl;
+}
+
+void CommandManager::runCommand(vector <string> parsedCommand) {
+    cout << "You do not have permission to use that command." << endl;
+}

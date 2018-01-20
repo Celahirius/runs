@@ -2,7 +2,7 @@ template <class userType>
 int commandInterface(userType* loggedUser) {
 
     string cmd = "";
-    string menu1[] = {"q", "showruns", "findruns", "help", "countruns", "averagetime", "history", "user", "changepasswd", "logout"}; //lista komend; uzywana przez funkcje searchMenu()
+    string menu1[] = {"q", "showruns", "findruns", "help", "countruns", "averagetime", "history", "user", "changepasswd", "logout", "score", "runner"}; //lista komend; uzywana przez funkcje searchMenu()
     vector <string> parsedCommand; //sparsowana komenda
     vector <string> previousCommands; //vector poprzednich komend
 
@@ -29,33 +29,7 @@ int commandInterface(userType* loggedUser) {
                         break;
                     case 3:
                         cout << "Lista komend: " << endl;
-                        cout << "doctor:\n"
-                                "   doctor new\n"
-                                "   doctor update <doctor_id>\n"
-                                "   doctor remove <doctor_id>\n"
-                                "   doctor find <search_word>\n"
-                                "   doctor appointments <doctor_id>\n"
-                                "   doctor addspec <doctor_id> <specialization>" << endl;
-                        cout << "patient:\n"
-                                "   patient new\n"
-                                "   patient update <patient_id>\n"
-                                "   patient remove <patient_id>\n"
-                                "   patient appointments <patient_id>\n"
-                                "   patient find <search_word>" << endl;
-                        cout << "patient:\n"
-                                "   patient new\n"
-                                "   patient update <specialization_id> <new_name>\n"
-                                "   patient remove <specialization_id>\n"
-                                "   patient find <search_word>" << endl;
-                        cout << "appointment:\n"
-                                "   appointment new <doctor_id> <patient_id>\n"
-                                "   appointment done <appointment_id>\n"
-                                "   appointment cancel <appointment_id>\n"
-                                "   appointment edit <appointment_id>" << endl;
-                        cout << "user:\n"
-                                "   user new \n"
-                                "   user edit <username> \n"
-                                "   user update <username>" << endl;
+
                         cout << "changepasswd"<< endl;
                         cout << "logout"<< endl;
                         cout << "history n - liczba ostatnich polecen do wyswietlenia (n musi byc od 1 do 20)" << endl;
@@ -85,6 +59,12 @@ int commandInterface(userType* loggedUser) {
                         break;
                     case 9:
                         command->logout();
+                        return 0;
+                    case 10:
+                        command->scoreCommand(parsedCommand);
+                        return 0;
+                    case 11:
+                        command->runCommand(parsedCommand);
                         return 0;
                     default:
                         cerr << "Nieznane polecenie\n Lista polecen - wpisz help \n";

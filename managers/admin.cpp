@@ -52,7 +52,7 @@ bool admin::deleteUser(string account_id) {
     string sql = "DELETE FROM ACCOUNT WHERE ACCOUNT_ID = " + account_id + ";";
     N.exec( convert(sql) );
 
-//    return deleted;
+    return 1;
 }
 
 bool admin::updateUser(string account_id) {
@@ -63,17 +63,95 @@ bool admin::updateUser(string account_id) {
     getline(cin, username_new);
     cout << "New password:" << endl;
     getline(cin, password_new);
-    cout << "New role (1 - admin, 2 - doctor, 3 - secretary):" << endl;
-    getline(cin, role_new);
 
     string sql = "UPDATE ACCOUNT SET"
                  + ((username_new != "")? " USERNAME = '" +  N.esc(username_new) + "'" : "")
                  + ((password_new != "")? " PASSWORD = '" +  N.esc(password_new) + "'" : "")
-                 + ((role_new != "")? " ROLE_ID = " +  N.esc(role_new) + "" : "")
                  + " WHERE ACCOUNT_ID = " + account_id + ";";
     N.exec( convert(sql) );
 
-//    return updated;
+    sql = "SELECT ROLE_ID FROM ACCOUNT WHERE ACCOUNT_ID = " + account_id + ";";
+    result R = N.exec( convert(sql) );
+    string role = R.begin()[0].as<string>();
+
+    if(role == "2") {
+        string username_new, password_new;
+        cout << "New name:" << endl;
+        getline(cin, username_new);
+        cout << "New surname:" << endl;
+        getline(cin, password_new);
+
+        string sql = "UPDATE RUNNER SET"
+                     + ((username_new != "")? " NAME = '" +  N.esc(username_new) + "'" : "")
+                     + ((password_new != "")? " SURNAME = '" +  N.esc(password_new) + "'" : "")
+                     + " WHERE USER_ID = " + account_id + ";";
+        N.exec( convert(sql) );
+    }
+
+    return 1;
+}
+
+bool admin::updateRunner(string runner_id) {
+    connection C(loginDetails());
+    nontransaction N(C);
+    string username_new, password_new;
+    cout << "New name:" << endl;
+    getline(cin, username_new);
+    cout << "New surname:" << endl;
+    getline(cin, password_new);
+
+    string sql = "UPDATE RUNNER SET"
+                 + ((username_new != "")? " NAME = '" +  N.esc(username_new) + "'" : "")
+                 + ((password_new != "")? " SURNAME = '" +  N.esc(password_new) + "'" : "")
+                 + " WHERE RUNNER_ID = " + runner_id + ";";
+    N.exec( convert(sql) );
+
+    return 1;
+}
+
+int admin::insertRunnerScore(string runner_id, string run_id) {
+    connection C(loginDetails());
+    work W(C);
+    string score, time;
+    cout << "Score:" << endl;
+    getline(cin, score);
+    cout << "Time:" << endl;
+    getline(cin, time);
+
+    string sql = "INSERT INTO SCORE (RUNNER_ID, RUN_ID, SCORE, TIME, FINISHED_RUN) VALUES ("
+                 + string("'") + W.esc(runner_id)
+                 + "', '" + W.esc(run_id)
+                 + "', '" + W.esc(score)
+                 + "', " + W.esc(time)
+                 + "', TRUE"
+                 + ");";
+    W.exec( convert(sql) );
+    W.commit();
+
+    sql = "SELECT currval('score_id_seq');";
+    nontransaction N(C);
+    result R = N.exec( convert(sql) );
+    int SCORE_ID = R.begin()[0].as<int>();
+
+    return SCORE_ID;
+}
+
+bool admin::updateRunnerScore(string runner_id, string run_id) {
+    connection C(loginDetails());
+    nontransaction N(C);
+    string score_new, time_new;
+    cout << "Score:" << endl;
+    getline(cin, score_new);
+    cout << "Time:" << endl;
+    getline(cin, time_new);
+
+    string sql = "UPDATE SCORE SET"
+                 + ((score_new != "")? " SCORE = '" +  N.esc(score_new) + "'" : "")
+                 + ((time_new != "")? " TIME = '" +  N.esc(time_new) + "'" : "")
+                 + " WHERE RUNNER_ID = " + runner_id + " AND  RUN_ID = " + run_id + ";";
+    N.exec( convert(sql) );
+
+    return 1;
 }
 
 int admin::createRun() {
@@ -104,7 +182,7 @@ bool admin::deleteRun(string run_id) {
     string sql = "DELETE FROM RUN WHERE RUN_ID = " + run_id + ";";
     N.exec( convert(sql) );
 
-//    return deleted;
+    return 1;
 }
 
 bool admin::updateRun(string run_id) {
@@ -122,7 +200,7 @@ bool admin::updateRun(string run_id) {
                  + " WHERE RUN_ID = " + run_id + ";";
     N.exec( convert(sql) );
 
-//    return updated;
+    return 1;
 }
 
 void admin::userCommand(vector <string> parsedCommand) {
@@ -135,7 +213,34 @@ void admin::userCommand(vector <string> parsedCommand) {
     } else {
         cout << "user:\n"
                 "   user new \n"
-                "   user edit <username> \n"
+                "   user delete <username> \n"
                 "   user update <username>" << endl;
+    }
+}
+
+void admin::scoreCommand(vector <string> parsedCommand) {
+    if(parsedCommand.size() == 2 && parsedCommand[1] == "new") {
+        this->insertRunnerScore(parsedCommand[2], parsedCommand[3]);
+    } else if(parsedCommand.size() == 3 && parsedCommand[1] == "edit") {
+        this->updateRunnerScore(parsedCommand[2], parsedCommand[3]);
+    } else {
+        cout << "score:\n"
+                "   score new \n"
+                "   score edit <username>" << endl;
+    }
+}
+
+void admin::runCommand(vector <string> parsedCommand) {
+    if(parsedCommand.size() == 2 && parsedCommand[1] == "new") {
+        this->createRun();
+    } else if(parsedCommand.size() == 3 && parsedCommand[1] == "delete") {
+        this->deleteRun(parsedCommand[2]);
+    } else if(parsedCommand.size() == 3 && parsedCommand[1] == "edit") {
+        this->updateRun(parsedCommand[2]);
+    } else {
+        cout << "run:\n"
+                "   run new \n"
+                "   run delete <username> \n"
+                "   run edit <username>" << endl;
     }
 }

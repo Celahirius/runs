@@ -25,6 +25,8 @@ public:
     virtual int countRuns(vector <string> parsedCommand);
     virtual string countAverageTime(vector <string> parsedCommand);
     virtual void userCommand(vector <string> parsedCommand);
+    virtual void scoreCommand(vector <string> parsedCommand);
+    virtual void runCommand(vector <string> parsedCommand);
 };
 
 #endif //LIBRARY_COMMANDS_H
