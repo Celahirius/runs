@@ -41,13 +41,13 @@ bool CommandManager::showCommandHistory(int n, vector <string>* previousCommands
     return 1;
 }
 
-void CommandManager::showRuns(vector <string> parsedCommand) {
+void CommandManager::showRuns(string runner_id) {
         vector <vector<string>> res;
         vector <string> row;
         string sql;
         connection C(loginDetails());
         nontransaction N(C);
-        sql = "SELECT R.RUN_ID, R.NAME, S.SCORE, S.TIME DATE FROM RUN AS R, SCORE AS S, RUNNER AS U WHERE R.RUN_ID = S.RUN_ID AND S.RUNNER_ID = U.RUNNER_ID AND U.RUNNER_ID = " + parsedCommand[2] + ";";
+        sql = "SELECT R.RUN_ID, R.NAME, S.SCORE, S.TIME DATE FROM RUN AS R, SCORE AS S, RUNNER AS U WHERE R.RUN_ID = S.RUN_ID AND S.RUNNER_ID = U.RUNNER_ID AND U.RUNNER_ID = " + N.esc(runner_id) + ";";
         result R(N.exec(convert(sql)));
         for (result::const_iterator c = R.begin(); c != R.end(); c++) {
             row.clear();
@@ -79,13 +79,13 @@ void CommandManager::showRuns(vector <string> parsedCommand) {
         }
 }
 
-void CommandManager::findRuns(vector <string> parsedCommand) {
+void CommandManager::findRuns(string runner_id, string search_frase) {
         vector <vector<string>> res;
         vector <string> row;
         string sql;
         connection C(loginDetails());
         nontransaction N(C);
-        sql = "SELECT R.RUN_ID, R.NAME, S.SCORE, S.TIME DATE FROM RUN AS R, SCORE AS S, RUNNER AS U WHERE R.RUN_ID = S.RUN_ID AND S.RUNNER_ID = U.RUNNER_ID AND U.RUNNER_ID = " + parsedCommand[2] + " AND (R.NAME ~* '.*" + N.esc(parsedCommand[3]) + ".*' OR R.DATE = to_date('" + N.esc(parsedCommand[3]) + "', 'DD.MM.YYYY') OR U.NAME ~* '.*" + N.esc(parsedCommand[3]) + ".*' OR U.SURNAME ~* '.*" + N.esc(parsedCommand[3]) + ".*');";
+        sql = "SELECT R.RUN_ID, R.NAME, S.SCORE, S.TIME DATE FROM RUN AS R, SCORE AS S, RUNNER AS U WHERE R.RUN_ID = S.RUN_ID AND S.RUNNER_ID = U.RUNNER_ID AND U.RUNNER_ID = " + N.esc(runner_id) + " AND (R.NAME ~* '.*" + N.esc(search_frase) + ".*' OR R.DATE = to_date('" + N.esc(search_frase) + "', 'DD.MM.YYYY') OR U.NAME ~* '.*" + N.esc(search_frase) + ".*' OR U.SURNAME ~* '.*" + N.esc(search_frase) + ".*');";
         result R(N.exec(convert(sql)));
         for (result::const_iterator c = R.begin(); c != R.end(); c++) {
             row.clear();
@@ -117,10 +117,10 @@ void CommandManager::findRuns(vector <string> parsedCommand) {
         }
 }
 
-int CommandManager::countRuns(vector <string> parsedCommand) {
-    string sql = "SELECT COUNT(*) FROM RUN;";
+int CommandManager::countRuns(string runner_id) {
     connection C(loginDetails());
     nontransaction N(C);
+    string sql = "SELECT COUNT(*) FROM RUN WHERE RUNNER_ID = " + N.esc(runner_id) + ";";
     result R( N.exec( convert(sql) ));
     int count = R.begin()[0].as<int>();
     return count;
@@ -144,5 +144,18 @@ void CommandManager::scoreCommand(vector <string> parsedCommand) {
 }
 
 void CommandManager::runCommand(vector <string> parsedCommand) {
-    cout << "You do not have permission to use that command." << endl;
+    if(parsedCommand.size() == 4 && parsedCommand[1] == "find") {
+        this->findRuns(parsedCommand[2], parsedCommand[3]);
+    } else if(parsedCommand.size() == 3 && parsedCommand[1] == "show") {
+        this->showRuns(parsedCommand[2]);
+    } else if(parsedCommand.size() == 3 && parsedCommand[1] == "count") {
+        this->countRuns(parsedCommand[2]);
+    } else if(parsedCommand[1] == "edit" || parsedCommand[1] == "delete" || parsedCommand[1] == "new") {
+        cout << "You do not have permission to use that command." << endl;
+    } else {
+        cout << "run:\n"
+                "   run new \n"
+                "   run delete <username> \n"
+                "   run edit <username>" << endl;
+    }
 }

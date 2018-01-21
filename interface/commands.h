@@ -20,9 +20,9 @@ public:
     int searchMenu(string option, string *menu, int n);
     bool saveCommandHistory(string cmd, vector <string>& previousCommands);
     bool showCommandHistory(int n, vector <string>* previousCommands);
-    virtual void showRuns(vector <string> parsedCommand);
-    virtual void findRuns(vector <string> parsedCommand);
-    virtual int countRuns(vector <string> parsedCommand);
+    virtual void showRuns(string runner_id);
+    virtual void findRuns(string runner_id, string search_frase);
+    virtual int countRuns(string runner_id);
     virtual string countAverageTime(vector <string> parsedCommand);
     virtual void userCommand(vector <string> parsedCommand);
     virtual void scoreCommand(vector <string> parsedCommand);
