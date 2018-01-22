@@ -10,25 +10,32 @@ vector<string> user::login() {
     string ACCOUNT_ID = "";
     string username, password;
     cout << "Username:" << endl;
-    cin >> username;
+//    cin >> username;
+    getline(cin, username);
     cout << "Password:" << endl;
-    cin >> password;
+//    cin >> password;
+    getline(cin, password);
 
-    connection C(loginDetails());
-    nontransaction N(C);
-    string sql = "SELECT ACCOUNT_ID, USERNAME, ROLE_ID FROM ACCOUNT WHERE USERNAME = '" + N.esc(username) + "' AND PASSWORD = '" + N.esc(password) + "';";
-    result R( N.exec( convert(sql) ));
-    if(R.empty()) {
-        loggedUser.push_back("ERROR");
-        cerr << "ERROR: USER LOGIN: logowanie nie powiodlo sie." << endl;
+    if(password != "" && username != "") {
+        connection C(loginDetails());
+        nontransaction N(C);
+        string sql = "SELECT ACCOUNT_ID, USERNAME, ROLE_ID FROM ACCOUNT WHERE USERNAME = '" + N.esc(username) +
+                     "' AND PASSWORD = '" + N.esc(password) + "';";
+        result R(N.exec(convert(sql)));
+        if (R.empty()) {
+            loggedUser.push_back("ERROR");
+            cerr << "ERROR: USER LOGIN: logowanie nie powiodlo sie." << endl;
+        } else {
+            loggedUser.push_back(R.begin()[0].as<string>());
+            loggedUser.push_back(R.begin()[1].as<string>());
+            loggedUser.push_back(R.begin()[2].as<string>());
+            ACCOUNT_ID = R.begin()[0].as<string>();
+            this->logged_user_id = R.begin()[0].as<int>();
+            sql = "UPDATE ACCOUNT SET LOGGED_IN = TRUE WHERE ACCOUNT_ID = " + N.esc(ACCOUNT_ID) + ";";
+            N.exec(convert(sql));
+        }
     } else {
-        loggedUser.push_back(R.begin()[0].as<string>());
-        loggedUser.push_back(R.begin()[1].as<string>());
-        loggedUser.push_back(R.begin()[2].as<string>());
-        ACCOUNT_ID = R.begin()[0].as<string>();
-        this->logged_user_id = R.begin()[0].as<int>();
-        sql = "UPDATE ACCOUNT SET LOGGED_IN = TRUE WHERE ACCOUNT_ID = " + N.esc(ACCOUNT_ID) + ";";
-        N.exec( convert(sql) );
+        loggedUser.push_back("EMPTY");
     }
 
     return loggedUser;

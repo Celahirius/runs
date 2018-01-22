@@ -86,7 +86,7 @@ void CommandManager::findRuns(string runner_id, string search_frase) {
         connection C(loginDetails());
         nontransaction N(C);
     // OR R.DATE = to_date('" + N.esc(search_frase) + "', 'DD.MM.YYYY')
-        sql = "SELECT R.RUN_ID, R.NAME, S.SCORE, S.TIME DATE FROM RUN AS R, SCORE AS S, RUNNER AS U WHERE R.RUN_ID = S.RUN_ID AND S.RUNNER_ID = U.RUNNER_ID AND U.RUNNER_ID = " + N.esc(runner_id) + " AND (R.NAME ~* '.*" + N.esc(search_frase) + ".*' OR U.NAME ~* '.*" + N.esc(search_frase) + ".*' OR U.SURNAME ~* '.*" + N.esc(search_frase) + ".*');";
+        sql = "SELECT R.RUN_ID, R.NAME, S.SCORE, S.TIME DATE FROM RUN AS R, SCORE AS S, RUNNER AS U WHERE R.RUN_ID = S.RUN_ID AND S.RUNNER_ID = U.RUNNER_ID AND U.RUNNER_ID = " + N.esc(runner_id) + " AND R.NAME ~* '.*" + N.esc(search_frase) + ".*';";
         result R(N.exec(convert(sql)));
         for (result::const_iterator c = R.begin(); c != R.end(); c++) {
             row.clear();
@@ -128,8 +128,8 @@ int CommandManager::countRuns(string runner_id) {
     return count;
 }
 
-string CommandManager::countAverageTime(vector <string> parsedCommand) {
-    string sql = "SELECT TO_CHAR((SUM(EXTRACT(EPOCH FROM TIME))/COUNT(*) || ' second')::interval, 'HH24:MI:SS') FROM SCORE WHERE RUNNER_ID = " + parsedCommand[1] + ";";
+string CommandManager::countAverageTime() {
+    string sql = "SELECT TO_CHAR((SUM(EXTRACT(EPOCH FROM TIME))/COUNT(*) || ' second')::interval, 'HH24:MI:SS') FROM SCORE;";
 //    cout << sql << endl;
     connection C(loginDetails());
     nontransaction N(C);
@@ -137,6 +137,17 @@ string CommandManager::countAverageTime(vector <string> parsedCommand) {
     string time = clearWhite(R.begin()[0].as<string>());
     cout << time << endl;
     return time;
+}
+
+string CommandManager::countAverageRunners() {
+    string sql = "SELECT COUNT(DISTINCT (RUN_ID, RUNNER_ID))/COUNT(DISTINCT RUN_ID) FROM SCORE;";
+//    cout << sql << endl;
+    connection C(loginDetails());
+    nontransaction N(C);
+    result R( N.exec( convert(sql) ));
+    string runners = clearWhite(R.begin()[0].as<string>());
+    cout << runners << endl;
+    return runners;
 }
 
 void CommandManager::userCommand(vector <string> parsedCommand) {
@@ -158,6 +169,9 @@ void CommandManager::runCommand(vector <string> parsedCommand) {
         cout << "You do not have permission to use that command." << endl;
     } else {
         cout << "run:\n"
+                "   run find <runner_id> <run_id> \n"
+                "   run show <runner_id> \n"
+                "   run count <runner_id> \n"
                 "   run new \n"
                 "   run delete <username> \n"
                 "   run edit <username>" << endl;

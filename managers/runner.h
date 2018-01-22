@@ -11,7 +11,7 @@ class runner : public user {
 public:
     runner() {}
     ~runner() {}
-
+    virtual void runCommand(vector <string> parsedCommand);
 };
 
 #endif //CLINIC_RUNNER_H

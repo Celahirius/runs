@@ -7,7 +7,7 @@ int commandInterface(userType* loggedUser) {
     auto lambda =[]( int x, int y )->void { std::printf( "tu lambda. podane wartosci to: %d %d\n", x, y); };
 
     string cmd = "";
-    string menu1[] = {"q", "help", "averagetime", "history", "user", "changepasswd", "logout", "score", "run", "extra"}; //lista komend; uzywana przez funkcje searchMenu()
+    string menu1[] = {"q", "help", "averagetime", "history", "user", "changepasswd", "logout", "score", "run", "extra", "averagerunners"}; //lista komend; uzywana przez funkcje searchMenu()
     vector <string> parsedCommand; //sparsowana komenda
     vector <string> previousCommands; //vector poprzednich komend
 
@@ -21,20 +21,37 @@ int commandInterface(userType* loggedUser) {
             if(cmd != "") {
                 parsedCommand = command->commandParser(cmd); //parsowanie komendy
                 command->saveCommandHistory(cmd, previousCommands); //zapisanie komendy
-                switch (command->searchMenu(parsedCommand[0], menu1, 10)) { //wyszukanie numeru ID polecenia i wywolanie polecen
+                switch (command->searchMenu(parsedCommand[0], menu1, 11)) { //wyszukanie numeru ID polecenia i wywolanie polecen
                     case 0:
                         //quit
                         command->logout();
                         return 1;
                     case 1:
                         cout << "Lista komend: " << endl;
-
+                        cout << "score:\n"
+                                "   score new \n"
+                                "   score edit <username>" << endl;
+                        cout << "run:\n"
+                                "   run find <runner_id> <run_id> \n"
+                                "   run show <runner_id> \n"
+                                "   run count <runner_id> \n"
+                                "   run new \n"
+                                "   run delete <username> \n"
+                                "   run edit <username>" << endl;
+                        cout << "user:\n"
+                                "   user new \n"
+                                "   user delete <username> \n"
+                                "   user edit <username> \n"
+                                "   user show <username>" << endl;
+                        cout << "averagetime"<< endl;
+                        cout << "averagerunners"<< endl;
                         cout << "changepasswd"<< endl;
+                        cout << "extra - lambda and overloaded functions"<< endl;
                         cout << "logout"<< endl;
                         cout << "history n - liczba ostatnich polecen do wyswietlenia (n musi byc od 1 do 20)" << endl;
                         break;
                     case 2:
-                        command->countAverageTime(parsedCommand);
+                        command->countAverageTime();
                         break;
                     case 3:
                         if(parsedCommand.size() == 1)
@@ -66,6 +83,9 @@ int commandInterface(userType* loggedUser) {
                         lambda(1,2);
                         overloaded(1);
                         overloaded(1,2);
+                        break;
+                    case 10:
+                        command->countAverageRunners();
                         break;
                     default:
                         cerr << "Nieznane polecenie\n Lista polecen - wpisz help \n";

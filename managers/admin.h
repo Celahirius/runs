@@ -6,15 +6,16 @@
 #define CLINIC_ADMIN_H
 
 class admin : public user{
-//    doctor* doctorPrivileges;
-//    secretary* secretaryPrivileges;
+    int runnerLongestField[6];
+    string runnerHeader[6];
 public:
-    admin() {}
+    admin() : runnerLongestField{9, 7, 4, 7, 14, 12}, runnerHeader{"Runner ID", "User ID", "Name", "Surname", "Number of runs", "Average time"} {}
     ~admin() {}
 
     int createUser();
     bool deleteUser(string username);
     bool updateUser(string username);
+    void showUsers();
     int createRun();
     bool deleteRun(string run_id);
     bool updateRun(string run_id);

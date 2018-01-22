@@ -23,7 +23,8 @@ public:
     virtual void showRuns(string runner_id);
     virtual void findRuns(string runner_id, string search_frase);
     virtual int countRuns(string runner_id);
-    virtual string countAverageTime(vector <string> parsedCommand);
+    string countAverageTime();
+    string countAverageRunners();
     virtual void userCommand(vector <string> parsedCommand);
     virtual void scoreCommand(vector <string> parsedCommand);
     virtual void runCommand(vector <string> parsedCommand);

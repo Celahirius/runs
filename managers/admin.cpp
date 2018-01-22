@@ -210,11 +210,14 @@ void admin::userCommand(vector <string> parsedCommand) {
         this->deleteUser(parsedCommand[2]);
     } else if(parsedCommand.size() == 3 && parsedCommand[1] == "edit") {
         this->updateUser(parsedCommand[2]);
+    } else if(parsedCommand.size() == 2 && parsedCommand[1] == "show") {
+        this->showUsers();
     } else {
         cout << "user:\n"
                 "   user new \n"
                 "   user delete <username> \n"
-                "   user update <username>" << endl;
+                "   user edit <username> \n"
+                "   user show <username>" << endl;
     }
 }
 
@@ -245,8 +248,50 @@ void admin::runCommand(vector <string> parsedCommand) {
         this->updateRun(parsedCommand[2]);
     } else {
         cout << "run:\n"
+                "   run find <runner_id> <run_id> \n"
+                "   run show <runner_id> \n"
+                "   run count <runner_id> \n"
                 "   run new \n"
                 "   run delete <username> \n"
                 "   run edit <username>" << endl;
     }
+}
+
+void admin::showUsers() {
+
+        vector <vector<string>> res;
+        vector <string> row;
+        string sql;
+        connection C(loginDetails());
+        nontransaction N(C);
+        sql = "SELECT RUNNER_ID, USER_ID, NAME, SURNAME, (SELECT COUNT(DISTINCT RUN_ID) FROM SCORE AS S WHERE S.RUNNER_ID = R.RUNNER_ID), (SELECT TO_CHAR((SUM(EXTRACT(EPOCH FROM TIME))/COUNT(*) || ' second')::interval, 'HH24:MI:SS') FROM SCORE AS S WHERE S.RUNNER_ID = R.RUNNER_ID) FROM RUNNER AS R;";
+        result R(N.exec(convert(sql)));
+        for (result::const_iterator c = R.begin(); c != R.end(); c++) {
+            row.clear();
+            for (int i = 0; i < c.size(); i++) {
+                row.push_back(clearWhite(c[i].c_str()));
+                if (row[i].size() > this->runnerLongestField[i]) {
+                    this->runnerLongestField[i] = row[i].size();
+                }
+            }
+            res.push_back(row);
+        }
+        for (int i = 0; i < 6; i++) {
+            cout << this->runnerHeader[i];
+            for (int j = 0; j < this->runnerLongestField[i] - this->runnerHeader[i].size(); j++) {
+                cout << " ";
+            }
+            cout << "  " << flush;
+        }
+        cout << endl;
+        for (int i = 0; i < res.size(); i++) {
+            for (int j = 0; j < res[i].size(); j++) {
+                cout << res[i][j];
+                for(int k = 0; k < this->runnerLongestField[j] - res[i][j].size(); k++) {
+                    cout << " ";
+                }
+                cout << "  " << flush;
+            }
+            cout << endl;
+        }
 }

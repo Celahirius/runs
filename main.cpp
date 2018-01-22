@@ -11,35 +11,30 @@ int main(int argc, char* argv[]) {
                 vector<string> loggedUserInfo;
                 string loggedUserID = "ERROR", username, role;
 
-                while (loggedUserID == "ERROR") {
+                while (loggedUserID == "ERROR" && loggedUserID != "EMPTY") {
                     loggedUserInfo = loggedUser->login();
                     loggedUserID = loggedUserInfo[0];
                 }
+                if(loggedUserID != "ERROR" && loggedUserID != "EMPTY") {
+                    username = loggedUserInfo[1];
+                    role = loggedUserInfo[2];
 
-                username = loggedUserInfo[1];
-                role = loggedUserInfo[2];
+                    cout << "Welcome " << username << "." << endl;
 
-                cout << "Welcome " << username << "." << endl;
-
-                if (role == "1") {
-                    admin *userAdmin = new admin;
-                    userAdmin->role = stoi(role);
-                    userAdmin->username = username;
-                    userAdmin->userID = loggedUserID;
-                    output = commandInterface<admin>(userAdmin);
-                } else if (role == "2") {
-                    runner *userRunner = new runner;
-                    userRunner->role = stoi(role);
-                    userRunner->username = username;
-                    userRunner->userID = loggedUserID;
-                    output = commandInterface<runner>(userRunner);
-                } else if (role == "3") {
-//                    secretary *userSecretary = new secretary;
-//                    userSecretary->role = stoi(role);
-//                    userSecretary->username = username;
-//                    userSecretary->userID = loggedUserID;
-//                    output = commandInterface<secretary>(userSecretary);
-                }
+                    if (role == "1") {
+                        admin *userAdmin = new admin;
+                        userAdmin->role = stoi(role);
+                        userAdmin->username = username;
+                        userAdmin->userID = loggedUserID;
+                        output = commandInterface<admin>(userAdmin);
+                    } else if (role == "2") {
+                        runner *userRunner = new runner;
+                        userRunner->role = stoi(role);
+                        userRunner->username = username;
+                        userRunner->userID = loggedUserID;
+                        output = commandInterface<runner>(userRunner);
+                    }
+                } else output = 1;
             }
         }
     } catch (const std::runtime_error& e) {
