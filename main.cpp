@@ -28,11 +28,11 @@ int main(int argc, char* argv[]) {
                     userAdmin->userID = loggedUserID;
                     output = commandInterface<admin>(userAdmin);
                 } else if (role == "2") {
-//                    doctor *userDoctor = new doctor;
-//                    userDoctor->role = stoi(role);
-//                    userDoctor->username = username;
-//                    userDoctor->userID = loggedUserID;
-//                    output = commandInterface<doctor>(userDoctor);
+                    runner *userRunner = new runner;
+                    userRunner->role = stoi(role);
+                    userRunner->username = username;
+                    userRunner->userID = loggedUserID;
+                    output = commandInterface<runner>(userRunner);
                 } else if (role == "3") {
 //                    secretary *userSecretary = new secretary;
 //                    userSecretary->role = stoi(role);

@@ -122,7 +122,7 @@ int admin::insertRunnerScore(string runner_id, string run_id) {
                  + string("'") + W.esc(runner_id)
                  + "', '" + W.esc(run_id)
                  + "', '" + W.esc(score)
-                 + "', " + W.esc(time)
+                 + "', '" + W.esc(time)
                  + "', TRUE"
                  + ");";
     W.exec( convert(sql) );
@@ -219,9 +219,9 @@ void admin::userCommand(vector <string> parsedCommand) {
 }
 
 void admin::scoreCommand(vector <string> parsedCommand) {
-    if(parsedCommand.size() == 2 && parsedCommand[1] == "new") {
+    if(parsedCommand.size() == 4 && parsedCommand[1] == "new") {
         this->insertRunnerScore(parsedCommand[2], parsedCommand[3]);
-    } else if(parsedCommand.size() == 3 && parsedCommand[1] == "edit") {
+    } else if(parsedCommand.size() == 4 && parsedCommand[1] == "edit") {
         this->updateRunnerScore(parsedCommand[2], parsedCommand[3]);
     } else {
         cout << "score:\n"
@@ -231,7 +231,13 @@ void admin::scoreCommand(vector <string> parsedCommand) {
 }
 
 void admin::runCommand(vector <string> parsedCommand) {
-    if(parsedCommand.size() == 2 && parsedCommand[1] == "new") {
+    if(parsedCommand.size() == 4 && parsedCommand[1] == "find") {
+        this->findRuns(parsedCommand[2], parsedCommand[3]);
+    } else if(parsedCommand.size() == 3 && parsedCommand[1] == "show") {
+        this->showRuns(parsedCommand[2]);
+    } else if(parsedCommand.size() == 3 && parsedCommand[1] == "count") {
+        this->countRuns(parsedCommand[2]);
+    } else if(parsedCommand.size() == 2 && parsedCommand[1] == "new") {
         this->createRun();
     } else if(parsedCommand.size() == 3 && parsedCommand[1] == "delete") {
         this->deleteRun(parsedCommand[2]);

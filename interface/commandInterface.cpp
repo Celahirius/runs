@@ -15,7 +15,7 @@ int commandInterface(userType* loggedUser) {
 
     while(true) {
         try {
-            cout << "run " << flush;
+            cout << "run$ " << flush;
             getline(cin, cmd);
 
             if(cmd != "") {
@@ -58,15 +58,15 @@ int commandInterface(userType* loggedUser) {
                         return 0;
                     case 7:
                         command->scoreCommand(parsedCommand);
-                        return 0;
+                        break;
                     case 8:
                         command->runCommand(parsedCommand);
-                        return 0;
+                        break;
                     case 9:
                         lambda(1,2);
                         overloaded(1);
                         overloaded(1,2);
-                        return 0;
+                        break;
                     default:
                         cerr << "Nieznane polecenie\n Lista polecen - wpisz help \n";
                         break;

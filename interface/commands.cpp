@@ -85,7 +85,8 @@ void CommandManager::findRuns(string runner_id, string search_frase) {
         string sql;
         connection C(loginDetails());
         nontransaction N(C);
-        sql = "SELECT R.RUN_ID, R.NAME, S.SCORE, S.TIME DATE FROM RUN AS R, SCORE AS S, RUNNER AS U WHERE R.RUN_ID = S.RUN_ID AND S.RUNNER_ID = U.RUNNER_ID AND U.RUNNER_ID = " + N.esc(runner_id) + " AND (R.NAME ~* '.*" + N.esc(search_frase) + ".*' OR R.DATE = to_date('" + N.esc(search_frase) + "', 'DD.MM.YYYY') OR U.NAME ~* '.*" + N.esc(search_frase) + ".*' OR U.SURNAME ~* '.*" + N.esc(search_frase) + ".*');";
+    // OR R.DATE = to_date('" + N.esc(search_frase) + "', 'DD.MM.YYYY')
+        sql = "SELECT R.RUN_ID, R.NAME, S.SCORE, S.TIME DATE FROM RUN AS R, SCORE AS S, RUNNER AS U WHERE R.RUN_ID = S.RUN_ID AND S.RUNNER_ID = U.RUNNER_ID AND U.RUNNER_ID = " + N.esc(runner_id) + " AND (R.NAME ~* '.*" + N.esc(search_frase) + ".*' OR U.NAME ~* '.*" + N.esc(search_frase) + ".*' OR U.SURNAME ~* '.*" + N.esc(search_frase) + ".*');";
         result R(N.exec(convert(sql)));
         for (result::const_iterator c = R.begin(); c != R.end(); c++) {
             row.clear();
@@ -120,18 +121,21 @@ void CommandManager::findRuns(string runner_id, string search_frase) {
 int CommandManager::countRuns(string runner_id) {
     connection C(loginDetails());
     nontransaction N(C);
-    string sql = "SELECT COUNT(*) FROM RUN WHERE RUNNER_ID = " + N.esc(runner_id) + ";";
+    string sql = "SELECT COUNT(DISTINCT RUN_ID) FROM SCORE WHERE RUNNER_ID = " + N.esc(runner_id) + ";";
     result R( N.exec( convert(sql) ));
     int count = R.begin()[0].as<int>();
+    cout << count << endl;
     return count;
 }
 
 string CommandManager::countAverageTime(vector <string> parsedCommand) {
-    string sql = "SELECT TO_CHAR(((SUM(EXTRACT(EPOCH FROM TIME))/COUNT(*)) || ' second')::interval, 'HH:MI:SS') FROM SCORE WHERE RUNNER_ID = " + parsedCommand[2] + ";";
+    string sql = "SELECT TO_CHAR((SUM(EXTRACT(EPOCH FROM TIME))/COUNT(*) || ' second')::interval, 'HH24:MI:SS') FROM SCORE WHERE RUNNER_ID = " + parsedCommand[1] + ";";
+//    cout << sql << endl;
     connection C(loginDetails());
     nontransaction N(C);
     result R( N.exec( convert(sql) ));
     string time = clearWhite(R.begin()[0].as<string>());
+    cout << time << endl;
     return time;
 }
 
